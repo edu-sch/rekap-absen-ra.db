@@ -244,13 +244,22 @@
 
             <!-- Selection Helper Toolbar & Direct Inline Editing Hint -->
             <div class="px-4 py-2 bg-slate-50 border-b border-slate-200 flex flex-wrap items-center justify-between text-xs gap-2">
-                <div class="flex items-center space-x-2">
+                <div class="flex flex-wrap items-center gap-2">
                     <button onclick="selectAllDisplayed(true)" class="text-brand-700 hover:underline font-semibold">
                         <i class="fa-regular fa-square-check mr-1"></i>Pilih Semua yang Tampil
                     </button>
                     <span class="text-slate-300">|</span>
                     <button onclick="selectAllDisplayed(false)" class="text-slate-500 hover:underline">
                         Kosongkan Pilihan
+                    </button>
+                    <span class="text-slate-300">|</span>
+                    <!-- Tombol Menu Cepat Pilih 15 Nomor Spesifik -->
+                    <button onclick="selectSpecificPresetNumbers()" class="bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 px-2.5 py-1 rounded-md font-bold transition flex items-center shadow-xs" title="Centang otomatis 15 nomor murid: 46, 57, 58, 63, 66, 67, 68, 73, 76, 77, 82, 84, 86, 89, 93">
+                        <i class="fa-solid fa-list-check text-amber-600 mr-1.5"></i> Centang 15 No. Khusus (46, 57, 58, 63...)
+                    </button>
+                    <!-- Tombol Custom Input Nomor Bebas -->
+                    <button onclick="openCustomNumberSelectorModal()" class="text-indigo-600 hover:text-indigo-800 font-semibold hover:underline flex items-center">
+                        <i class="fa-solid fa-hashtag mr-1"></i>Pilih No. Kustom...
                     </button>
                 </div>
                 <div class="flex items-center space-x-3 text-slate-600">
@@ -539,6 +548,49 @@
                     </button>
                 </div>
             </form>
+        </div>
+    </div>
+
+    <!-- Modal Pemilih Nomor Khusus Murid -->
+    <div id="customNumberSelectorModal" class="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4 no-print">
+        <div class="bg-white rounded-2xl shadow-2xl max-w-lg w-full overflow-hidden border border-slate-100">
+            <div class="bg-brand-900 text-white px-6 py-4 flex items-center justify-between">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-list-check text-amber-400 text-lg"></i>
+                    <div>
+                        <h3 class="font-bold text-base">Centang Murid Berdasarkan Nomor (ID)</h3>
+                        <p class="text-xs text-brand-200">Ketik atau pilih nomor murid yang akan dicetak kwitansinya</p>
+                    </div>
+                </div>
+                <button onclick="closeCustomNumberSelectorModal()" class="text-slate-300 hover:text-white transition text-xl">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+            <div class="p-6 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Daftar Nomor Murid (Pisahkan dengan koma atau spasi/enter)</label>
+                    <textarea id="customNumberInputText" rows="4" placeholder="Contoh: 46, 57, 58, 63, 66, 67, 68, 73, 76, 77, 82, 84, 86, 89, 93" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm font-mono focus:ring-2 focus:ring-brand-500 outline-none"></textarea>
+                </div>
+                <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 text-xs">
+                    <span class="font-bold text-slate-700 block mb-1">Pilihan Cepat Preset:</span>
+                    <button type="button" onclick="loadPresetToInputText()" class="bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300 px-2 py-1 rounded text-xs font-bold transition mr-2">
+                        15 No. Khusus (46, 57, 58, 63, 66, 67, 68, 73, 76, 77, 82, 84, 86, 89, 93)
+                    </button>
+                </div>
+                <div class="flex justify-between items-center pt-3 border-t border-slate-200">
+                    <button type="button" onclick="closeCustomNumberSelectorModal()" class="px-4 py-2 bg-slate-200 hover:bg-slate-300 text-slate-700 rounded-lg text-sm font-medium transition">
+                        Batal
+                    </button>
+                    <div class="space-x-2">
+                        <button type="button" onclick="applyCustomNumbers(false)" class="px-3.5 py-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-lg text-xs font-bold transition border border-slate-300">
+                            Tambah ke Pilihan
+                        </button>
+                        <button type="button" onclick="applyCustomNumbers(true)" class="px-4 py-2 bg-brand-700 hover:bg-brand-800 text-white rounded-lg text-xs font-bold transition shadow">
+                            Centang Nomor Ini Saja
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -1046,6 +1098,70 @@
             });
             renderTable();
             updateSelectedCounter();
+        }
+
+        // 15 Nomor Spesifik yang sering dicetak kwitansinya
+        const PRESET_SPECIAL_NUMBERS = [46, 57, 58, 63, 66, 67, 68, 73, 76, 77, 82, 84, 86, 89, 93];
+
+        function selectSpecificPresetNumbers() {
+            selectedStudentIds.clear();
+            PRESET_SPECIAL_NUMBERS.forEach(num => {
+                const found = studentsData.find(s => s.id === num);
+                if (found) {
+                    selectedStudentIds.add(num);
+                }
+            });
+            renderTable();
+            updateSelectedCounter();
+
+            // Beri notifikasi info singkat
+            alert(`Berhasil mencentang ${selectedStudentIds.size} murid (No. 46, 57, 58, 63, 66, 67, 68, 73, 76, 77, 82, 84, 86, 89, 93).\nSilakan klik tombol "Cetak Kwitansi Terpilih" untuk mencetak!`);
+        }
+
+        function openCustomNumberSelectorModal() {
+            document.getElementById('customNumberInputText').value = PRESET_SPECIAL_NUMBERS.join(', ');
+            document.getElementById('customNumberSelectorModal').classList.remove('hidden');
+        }
+
+        function closeCustomNumberSelectorModal() {
+            document.getElementById('customNumberSelectorModal').classList.add('hidden');
+        }
+
+        function loadPresetToInputText() {
+            document.getElementById('customNumberInputText').value = PRESET_SPECIAL_NUMBERS.join(', ');
+        }
+
+        function applyCustomNumbers(exclusive = true) {
+            const rawText = document.getElementById('customNumberInputText').value;
+            // Pecah berdasarkan koma, spasi, titik koma, atau enter
+            const numbers = rawText
+                .split(/[\s,;]+/)
+                .map(n => parseInt(n.trim()))
+                .filter(n => !isNaN(n) && n > 0);
+
+            if (numbers.length === 0) {
+                alert("Masukkan minimal 1 nomor urut murid.");
+                return;
+            }
+
+            if (exclusive) {
+                selectedStudentIds.clear();
+            }
+
+            let addedCount = 0;
+            numbers.forEach(num => {
+                const found = studentsData.find(s => s.id === num);
+                if (found) {
+                    selectedStudentIds.add(num);
+                    addedCount++;
+                }
+            });
+
+            renderTable();
+            updateSelectedCounter();
+            closeCustomNumberSelectorModal();
+
+            alert(`Selesai! Sebanyak ${selectedStudentIds.size} murid berhasil dicentang untuk dicetak kwitansinya.`);
         }
 
         function updateSelectedCounter() {
