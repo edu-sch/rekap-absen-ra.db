@@ -466,7 +466,7 @@
                     <div class="space-y-3 text-sm">
                         <div class="grid grid-cols-3 gap-2">
                             <span class="text-slate-500 font-medium">Telah Terima Dari:</span>
-                            <span class="col-span-2 font-bold text-slate-800" id="kwiFrom">Wali Murid RA Darul Barokah</span>
+                            <span class="col-span-2 font-bold text-slate-800" id="kwiFrom">Wali Murid Nama Siswa</span>
                         </div>
                         <div class="grid grid-cols-3 gap-2">
                             <span class="text-slate-500 font-medium">Uang Sejumlah:</span>
@@ -483,11 +483,11 @@
                             <span class="text-xs text-emerald-700 block font-medium">Jumlah Pembayaran</span>
                             <span class="text-xl font-black font-mono" id="kwiAmount">Rp. 50.000</span>
                         </div>
-                        <!-- TTD Kepala RA (NURUL MUSYARROFAH, S.Pd.) -->
-                        <div class="text-center font-medium text-xs w-52">
+                        <!-- TTD Bendahara RA (Siti Mutiatuz Zahroh) -->
+                        <div class="text-center font-medium text-xs w-56">
                             <p id="kwiDate">Surabaya, 31 Agustus 2026</p>
-                            <p class="text-slate-500 mb-14">Kepala RA Darul Barokah,</p>
-                            <p class="font-bold underline text-slate-900 uppercase">NURUL MUSYARROFAH, S.Pd.</p>
+                            <p class="text-slate-500 mb-14">Bendahara RA Darul Barokah,</p>
+                            <p class="font-bold underline text-slate-900 uppercase">Siti Mutiatuz Zahroh</p>
                         </div>
                     </div>
                 </div>
@@ -1369,11 +1369,14 @@
 
         // ================= KWITANSI SINGLE & BATCH =================
         function generateKwitansiHTML(student, isCompact = false) {
-            const monthText = MONTH_NAMES[currentMonth] || currentMonth;
+            // Bersihkan nama bulan dan tahun agar tidak duplikat (contoh "AGUSTUS 2026" diambil "Agustus" dan "2026")
+            const rawMonthText = MONTH_NAMES[currentMonth] || "AGUSTUS 2026";
+            const monthPart = rawMonthText.split(" ")[0]; // "AGUSTUS"
+            const monthCapitalized = monthPart.charAt(0).toUpperCase() + monthPart.slice(1).toLowerCase(); // "Agustus"
             const roman = ROMAN_MONTHS[currentMonth] || "VIII";
             const year = currentMonth.split("-")[0];
             const kwiNum = student.kwitansiNo || `${String(student.id).padStart(4, '0')}/KW/MI.DB/${roman}/${year}`;
-            const dateStr = `Surabaya, 31 ${monthText.charAt(0) + monthText.slice(1).toLowerCase()} ${year}`;
+            const dateStr = `Surabaya, 31 ${monthCapitalized} ${year}`;
 
             // Format ringkas dan proporsional agar 1 lembar muat pas 3 kwitansi (A4 / F4)
             return `
@@ -1397,7 +1400,7 @@
                     <div class="space-y-1 text-[11px]">
                         <div class="grid grid-cols-12 gap-1 items-start">
                             <span class="col-span-3 text-slate-500 font-medium">Telah Terima Dari</span>
-                            <span class="col-span-9 font-semibold text-slate-800">: Wali Murid RA Darul Barokah</span>
+                            <span class="col-span-9 font-semibold text-slate-800">: Wali Murid <strong class="text-slate-900 font-bold">${student.name}</strong></span>
                         </div>
                         <div class="grid grid-cols-12 gap-1 items-start">
                             <span class="col-span-3 text-slate-500 font-medium">Uang Sejumlah</span>
@@ -1405,21 +1408,21 @@
                         </div>
                         <div class="grid grid-cols-12 gap-1 items-start">
                             <span class="col-span-3 text-slate-500 font-medium">Untuk Pembayaran</span>
-                            <span class="col-span-9 font-medium text-slate-800">: SPP Bulan ${monthText} a.n. <strong class="text-slate-900 font-bold">${student.name}</strong> (Kelas ${student.subClass})</span>
+                            <span class="col-span-9 font-medium text-slate-800">: SPP Bulan ${monthCapitalized} ${year} a.n. <strong class="text-slate-900 font-bold">${student.name}</strong> (Kelas ${student.subClass})</span>
                         </div>
                     </div>
 
-                    <!-- Nominal & Tanda Tangan Kepala RA -->
+                    <!-- Nominal & Tanda Tangan Bendahara RA -->
                     <div class="mt-2 flex items-end justify-between pt-1.5 border-t border-dashed border-slate-300">
                         <div class="bg-emerald-50 border border-emerald-400 text-emerald-950 px-2.5 py-1 rounded">
                             <span class="text-[9.5px] text-emerald-700 block font-semibold leading-tight">Jumlah Pembayaran:</span>
                             <span class="text-base font-black font-mono tracking-tight leading-tight">Rp. 50.000</span>
                         </div>
-                        <!-- Tanda Tangan Bersih Kepala RA (NURUL MUSYARROFAH, S.Pd.) -->
-                        <div class="text-center text-[10px] w-48 leading-tight">
+                        <!-- Tanda Tangan Bendahara RA (Siti Mutiatuz Zahroh) -->
+                        <div class="text-center text-[10px] w-52 leading-tight">
                             <p class="text-slate-700">${dateStr}</p>
-                            <p class="text-slate-600 mb-7">Kepala RA Darul Barokah,</p>
-                            <p class="font-bold underline uppercase text-slate-900">NURUL MUSYARROFAH, S.Pd.</p>
+                            <p class="text-slate-600 mb-7">Bendahara RA Darul Barokah,</p>
+                            <p class="font-bold underline uppercase text-slate-900">Siti Mutiatuz Zahroh</p>
                         </div>
                     </div>
                 </div>
@@ -1430,13 +1433,16 @@
             const student = studentsData.find(s => s.id === id);
             if (!student) return;
 
-            const monthText = MONTH_NAMES[currentMonth] || currentMonth;
+            const rawMonthText = MONTH_NAMES[currentMonth] || "AGUSTUS 2026";
+            const monthPart = rawMonthText.split(" ")[0];
+            const monthCapitalized = monthPart.charAt(0).toUpperCase() + monthPart.slice(1).toLowerCase();
             const roman = ROMAN_MONTHS[currentMonth] || "VIII";
             const year = currentMonth.split("-")[0];
 
             document.getElementById('kwiNo').innerText = student.kwitansiNo || `${String(student.id).padStart(4, '0')}/KW/MI.DB/${roman}/${year}`;
-            document.getElementById('kwiFor').innerHTML = `SPP bulan ${monthText} a.n. <strong>${student.name}</strong> (Kelas ${student.subClass})`;
-            document.getElementById('kwiDate').innerText = `Surabaya, 31 ${monthText.charAt(0) + monthText.slice(1).toLowerCase()} ${year}`;
+            document.getElementById('kwiFrom').innerText = `Wali Murid ${student.name}`;
+            document.getElementById('kwiFor').innerHTML = `SPP Bulan ${monthCapitalized} ${year} a.n. <strong>${student.name}</strong> (Kelas ${student.subClass})`;
+            document.getElementById('kwiDate').innerText = `Surabaya, 31 ${monthCapitalized} ${year}`;
 
             document.getElementById('kwitansiModal').classList.remove('hidden');
         }
