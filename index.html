@@ -1369,7 +1369,7 @@
 
         // ================= KWITANSI SINGLE & BATCH =================
         function generateKwitansiHTML(student, isCompact = false) {
-            // Bersihkan nama bulan dan tahun agar tidak duplikat (contoh "AGUSTUS 2026" diambil "Agustus" dan "2026")
+            // Bersihkan nama bulan dan tahun agar tidak duplikat
             const rawMonthText = MONTH_NAMES[currentMonth] || "AGUSTUS 2026";
             const monthPart = rawMonthText.split(" ")[0]; // "AGUSTUS"
             const monthCapitalized = monthPart.charAt(0).toUpperCase() + monthPart.slice(1).toLowerCase(); // "Agustus"
@@ -1378,51 +1378,51 @@
             const kwiNum = student.kwitansiNo || `${String(student.id).padStart(4, '0')}/KW/MI.DB/${roman}/${year}`;
             const dateStr = `Surabaya, 31 ${monthCapitalized} ${year}`;
 
-            // Format ringkas dan proporsional agar 1 lembar muat pas 3 kwitansi (A4 / F4)
+            // Format lebih proporsional & agak besar, jarak antar-kwitansi rapat dan pas 3 per lembar
             return `
-                <div class="kwitansi-item bg-white border border-slate-700 rounded-lg p-3 text-slate-900 box-border" style="font-size: 11px; line-height: 1.35;">
+                <div class="kwitansi-item bg-white border-2 border-slate-800 rounded-xl p-4 text-slate-900 box-border" style="font-size: 12.5px; line-height: 1.45;">
                     <!-- Header Kop Kwitansi -->
-                    <div class="flex items-center justify-between border-b border-slate-700 pb-1.5 mb-2">
-                        <div class="flex items-center space-x-2">
-                            <img src="logo.png" alt="Logo" class="w-9 h-9 object-contain">
+                    <div class="flex items-center justify-between border-b-2 border-slate-800 pb-2 mb-2.5">
+                        <div class="flex items-center space-x-3">
+                            <img src="logo.png" alt="Logo" class="w-11 h-11 object-contain">
                             <div>
-                                <h4 class="font-extrabold text-xs tracking-wide text-slate-900 leading-tight">RA DARUL BAROKAH SURABAYA</h4>
-                                <p class="text-[9.5px] text-slate-600 leading-tight">JL. JATIPURWO IV/14-A Semampir Surabaya</p>
+                                <h4 class="font-extrabold text-sm sm:text-base tracking-wide text-slate-900 leading-tight">RA DARUL BAROKAH SURABAYA</h4>
+                                <p class="text-[11px] text-slate-600 leading-tight">JL. JATIPURWO IV/14-A Semampir Surabaya</p>
                             </div>
                         </div>
                         <div class="text-right">
-                            <span class="inline-block bg-slate-800 text-white text-[9.5px] font-mono px-2 py-0.5 rounded font-bold">KWITANSI SPP</span>
-                            <p class="text-[10px] font-mono font-bold text-slate-700 mt-0.5 leading-tight">${kwiNum}</p>
+                            <span class="inline-block bg-slate-800 text-white text-[11px] font-mono px-2.5 py-0.5 rounded font-bold">KWITANSI SPP</span>
+                            <p class="text-xs font-mono font-bold text-slate-800 mt-0.5 leading-tight">${kwiNum}</p>
                         </div>
                     </div>
 
                     <!-- Isi Data Transaksi -->
-                    <div class="space-y-1 text-[11px]">
+                    <div class="space-y-1.5 text-xs sm:text-[13px]">
                         <div class="grid grid-cols-12 gap-1 items-start">
-                            <span class="col-span-3 text-slate-500 font-medium">Telah Terima Dari</span>
-                            <span class="col-span-9 font-semibold text-slate-800">: Wali Murid <strong class="text-slate-900 font-bold">${student.name}</strong></span>
+                            <span class="col-span-3 text-slate-600 font-semibold">Telah Terima Dari</span>
+                            <span class="col-span-9 font-bold text-slate-900">: Wali Murid ${student.name}</span>
                         </div>
                         <div class="grid grid-cols-12 gap-1 items-start">
-                            <span class="col-span-3 text-slate-500 font-medium">Uang Sejumlah</span>
-                            <span class="col-span-9 font-bold italic text-slate-900 bg-slate-50 px-1.5 py-0.5 rounded border border-slate-200">: Lima Puluh Ribu Rupiah</span>
+                            <span class="col-span-3 text-slate-600 font-semibold">Uang Sejumlah</span>
+                            <span class="col-span-9 font-bold italic text-slate-900 bg-slate-100 px-2 py-0.5 rounded border border-slate-300">: Lima Puluh Ribu Rupiah</span>
                         </div>
                         <div class="grid grid-cols-12 gap-1 items-start">
-                            <span class="col-span-3 text-slate-500 font-medium">Untuk Pembayaran</span>
+                            <span class="col-span-3 text-slate-600 font-semibold">Untuk Pembayaran</span>
                             <span class="col-span-9 font-medium text-slate-800">: SPP Bulan ${monthCapitalized} ${year} a.n. <strong class="text-slate-900 font-bold">${student.name}</strong> (Kelas ${student.subClass})</span>
                         </div>
                     </div>
 
                     <!-- Nominal & Tanda Tangan Bendahara RA -->
-                    <div class="mt-2 flex items-end justify-between pt-1.5 border-t border-dashed border-slate-300">
-                        <div class="bg-emerald-50 border border-emerald-400 text-emerald-950 px-2.5 py-1 rounded">
-                            <span class="text-[9.5px] text-emerald-700 block font-semibold leading-tight">Jumlah Pembayaran:</span>
-                            <span class="text-base font-black font-mono tracking-tight leading-tight">Rp. 50.000</span>
+                    <div class="mt-2.5 flex items-end justify-between pt-2 border-t border-dashed border-slate-400">
+                        <div class="bg-emerald-50 border-2 border-emerald-500 text-emerald-950 px-3.5 py-1.5 rounded-lg shadow-xs">
+                            <span class="text-[11px] text-emerald-800 block font-bold leading-tight">Jumlah Pembayaran:</span>
+                            <span class="text-lg font-black font-mono tracking-tight leading-tight">Rp. 50.000</span>
                         </div>
                         <!-- Tanda Tangan Bendahara RA (Siti Mutiatuz Zahroh) -->
-                        <div class="text-center text-[10px] w-52 leading-tight">
-                            <p class="text-slate-700">${dateStr}</p>
-                            <p class="text-slate-600 mb-7">Bendahara RA Darul Barokah,</p>
-                            <p class="font-bold underline uppercase text-slate-900">Siti Mutiatuz Zahroh</p>
+                        <div class="text-center text-xs w-56 leading-tight">
+                            <p class="text-slate-800 font-medium">${dateStr}</p>
+                            <p class="text-slate-600 mb-9 mt-0.5">Bendahara RA Darul Barokah,</p>
+                            <p class="font-extrabold underline uppercase text-slate-900">Siti Mutiatuz Zahroh</p>
                         </div>
                     </div>
                 </div>
@@ -1532,7 +1532,7 @@
                         <style>
                             @page {
                                 size: A4 portrait;
-                                margin: 10mm 12mm;
+                                margin: 8mm 10mm;
                             }
                             * {
                                 box-sizing: border-box;
@@ -1540,19 +1540,17 @@
                             body {
                                 background-color: #f1f5f9;
                                 margin: 0;
-                                padding: 20px 0;
+                                padding: 15px 0;
                                 font-family: 'Inter', ui-sans-serif, system-ui, -apple-system, sans-serif;
                             }
                             .sheet-page {
                                 background: white;
                                 width: 210mm;
                                 min-height: 297mm;
-                                padding: 8mm 12mm;
+                                padding: 10mm 12mm;
                                 margin: 0 auto 20px auto;
                                 box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
-                                display: flex;
-                                flex-direction: column;
-                                justify-content: space-between;
+                                display: block;
                                 page-break-after: always;
                                 break-after: page;
                             }
@@ -1561,20 +1559,18 @@
                                 break-after: auto;
                             }
                             .kwitansi-wrapper {
-                                flex: 1;
-                                display: flex;
-                                flex-direction: column;
-                                justify-content: center;
+                                margin-bottom: 2mm;
                             }
                             .potong-separator {
                                 text-align: center;
-                                color: #94a3b8;
-                                font-size: 9px;
-                                margin: 6px 0;
+                                color: #64748b;
+                                font-size: 10px;
+                                margin: 3.5mm 0;
                                 user-select: none;
+                                font-weight: 500;
                             }
                             .gunting-icon {
-                                letter-spacing: 1px;
+                                letter-spacing: 1.5px;
                             }
                             @media print {
                                 body {
@@ -1583,11 +1579,20 @@
                                 }
                                 .sheet-page {
                                     width: 100% !important;
-                                    min-height: 100vh !important;
-                                    height: 100vh !important;
-                                    padding: 4mm 0 !important;
+                                    min-height: 0 !important;
+                                    height: auto !important;
+                                    padding: 2mm 0 !important;
                                     margin: 0 !important;
                                     box-shadow: none !important;
+                                    page-break-after: always !important;
+                                    break-after: page !important;
+                                }
+                                .sheet-page:last-child {
+                                    page-break-after: auto !important;
+                                    break-after: auto !important;
+                                }
+                                .kwitansi-item {
+                                    border: 2px solid #0f172a !important;
                                 }
                             }
                         </style>
